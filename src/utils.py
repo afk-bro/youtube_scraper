@@ -4,6 +4,7 @@ import json
 import pandas as pd
 from datetime import datetime
 from pytube import YouTube
+from src.filter_config import banned_phrases, min_words
 
 def extract_video_id(url_or_id):
     if "youtube.com" in url_or_id or "youtu.be" in url_or_id:
@@ -76,3 +77,15 @@ def save_transcript(video_id, transcript, output_format="txt", output_dir="trans
         json.dump(meta, f, indent=2)
 
     return meta
+
+def distill_transcript(transcript, min_words=min_words, banned_phrases=banned_phrases):
+    def is_high_signal(text):
+        if text.strip().startswith("[") and text.strip().endswith("]"):
+            return False
+        if "♪" in text:
+            return False
+        if len(text.strip().split()) < min_words:
+            return False
+        return not any(phrase in text.lower() for phrase in banned_phrases)
+
+    return [{"text": entry["text"].strip()} for entry in transcript if is_high_signal(entry["text"])]

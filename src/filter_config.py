@@ -1,7 +1,7 @@
 # filter_config.py
 
 # Phrases to remove from transcript for distillation (filler, fluff, low-signal)
-BANNED_PHRASES = [
+banned_phrases = [
     # Engagement bait / filler
     "subscribe", "like the video", "follow me", "leave a comment", "smash that", "don't forget",
 
@@ -31,11 +31,11 @@ BANNED_PHRASES = [
 ]
 
 # Threshold for minimum number of words per transcript line
-MIN_WORDS = 5
+min_words = 5
 
 
     # General Trading + ICT keywords
-KEYWORDS = [
+keywords = [
     # General
     "entry", "exit", "stop loss", "take profit", "risk", "risk management",
     "reward to risk", "position sizing", "leverage", "margin", "slippage",
