@@ -1,8 +1,47 @@
-*.pyc
+# Byte-compiled / cache
 __pycache__/
-.env
-venv/
-.idea/
-.DS_Store
+*.py[cod]
+*.so
 
+# Virtual environments
+venv/
+.env
+.env.*
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Python packaging
+*.egg-info/
+dist/
+build/
+
+# Transcripts and outputs
 transcripts/
+*.meta.json
+
+# Model artifacts (if you later embed vector DBs)
+vector_store/
+
+# Logs
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Mac/Linux hidden files
+.*~
+__pycache__/
+*.py[cod]
+venv/
+.env
+.vscode/
+transcripts/
+*.meta.json
+vector_store/
+venv/
