@@ -5,6 +5,8 @@ import pandas as pd
 from datetime import datetime
 from pytube import YouTube
 from src.filter_config import banned_phrases, min_words
+from pytube.exceptions import VideoUnavailable, RegexMatchError
+import yt_dlp
 
 def extract_video_id(url_or_id):
     if "youtube.com" in url_or_id or "youtu.be" in url_or_id:
@@ -15,12 +17,13 @@ def extract_video_id(url_or_id):
 def get_video_title(video_id):
     try:
         url = f"https://www.youtube.com/watch?v={video_id}"
-        yt = YouTube(url)
-        title = yt.title.strip()
-        return title
+        ydl_opts = {"quiet": True}
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=False)
+            return info.get("title", f"video_{video_id}")
     except Exception as e:
-        print(f"[WARNING] Could not fetch title for {video_id}: {e}")
-        return f"video_{video_id}"   # fallback
+        print(f"[WARNING] yt_dlp failed for {video_id}: {e}")
+        return f"video_{video_id}"
     
 def sanitize_filename(name: str) -> str:
     return re.sub(r"[^\w\-_.() ]", "", name).strip().replace(" ", "_")

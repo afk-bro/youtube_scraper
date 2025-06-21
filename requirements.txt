@@ -1,3 +1,7 @@
 youtube-transcript-api
 pytube
+langchain
+chromadb
 pandas
+tiktoken
+requests

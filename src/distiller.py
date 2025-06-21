@@ -1,46 +1,25 @@
-# src/distiller.py
+import subprocess
 
-import os
-import requests
-
-API_URL = "https://api.perplexity.ai/chat/completions"
-API_KEY = os.getenv("PERPLEXITY_API_KEY")
-
-HEADERS = {
-    "Authorization": f"Bearer {API_KEY}",
-    "Content-Type": "application/json"
-}
-
-def distill_with_perplexity(text: str, model="pplx-7b-chat") -> str:
+def distill_with_local_llm(text: str, model="mistral") -> str:
     """
-    Send a transcript chunk to Perplexity API for distillation.
-
-    Parameters:
-    - text (str): Raw transcript chunk
-    - model (str): Model ID (default: pplx-7b-chat)
-
-    Returns:
-    - str: Clean summary
+    Use local Ollama model to distill trading-relevant transcript text.
     """
-    payload = {
-        "model": model,
-        "messages": [
-            {
-                "role": "system",
-                "content": (
-                    "You are an expert in trading strategies. Extract and summarize the key trading insight from this "
-                    "transcript chunk, using clear language and proper ICT (Inner Circle Trader) terminology. Remove all fluff."
-                )
-            },
-            {
-                "role": "user",
-                "content": text
-            }
-        ]
-    }
+    prompt = (
+        "Extract and summarize key trading insights from the following transcript chunk. "
+        "Use ICT terminology where relevant. Remove filler, simplify language, and preserve high-signal content.\n\n"
+        f"{text.strip()}"
+    )
 
-    response = requests.post(API_URL, headers=HEADERS, json=payload)
-    if response.status_code == 200:
-        return response.json()["choices"][0]["message"]["content"].strip()
-    else:
-        raise RuntimeError(f"[Perplexity API Error {response.status_code}]: {response.text}")
+    try:
+        result = subprocess.run(
+            ["ollama", "run", model],
+            input=prompt.encode("utf-8"),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=60
+        )
+        output = result.stdout.decode("utf-8").strip()
+        return output
+    except Exception as e:
+        print(f"[ERROR] Local LLM distillation failed: {e}")
+        return "[ERROR] Local LLM distillation failed."
